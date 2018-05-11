@@ -18,7 +18,8 @@
 from setuptools import setup, Extension
 import os
 
-execfile('atomac/version.py')  # set __version__ variable
+# execfile('atomac/version.py')  # set __version__ variable
+exec(open('atomac/version.py').read())
 
 
 def read(fname):

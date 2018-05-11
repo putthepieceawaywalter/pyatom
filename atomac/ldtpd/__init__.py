@@ -70,7 +70,7 @@ def main(port = 4118, parentpid=None):
         pass
     except:
         if _ldtp_debug:
-            print traceback.format_exc()
+            print(traceback.format_exc())
         if _ldtp_debug_file:
             with open(_ldtp_debug_file, "a") as fp:
                 fp.write(traceback.format_exc())

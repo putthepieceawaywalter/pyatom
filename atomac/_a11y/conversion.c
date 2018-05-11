@@ -64,29 +64,29 @@
 PyObject *
 CFStringRefToPyUnicode(CFStringRef source) // IN: CFString to convert
 {
-   CFIndex buf_size;
-   Boolean result;
-   char *dest;
-   PyObject *ret;
-
-   buf_size = CFStringGetMaximumSizeForEncoding(
-                                                CFStringGetLength(source),
-                                                CFENCODING
-                                                ) + 1;
-   dest = (char *) PyMem_Malloc(buf_size);
-   if (NULL == dest) {
-      return NULL;
-   }
-
-   result = CFStringGetCString(source, dest, buf_size, CFENCODING);
-   if (FALSE == result) {
-      PyErr_SetString(PyExc_ValueError,
-                      "Error converting CFString to C string");
-      return NULL;
-   }
-   ret = PyUnicode_DecodeUTF8(dest, strlen(dest), NULL);
-   PyMem_Free(dest);
-   return ret;
+    CFIndex buf_size;
+    Boolean result;
+    char *dest;
+    PyObject *ret;
+    
+    buf_size = CFStringGetMaximumSizeForEncoding(
+                                                 CFStringGetLength(source),
+                                                 CFENCODING
+                                                 ) + 1;
+    dest = (char *) PyMem_Malloc(buf_size);
+    if (NULL == dest) {
+        return NULL;
+    }
+    
+    result = CFStringGetCString(source, dest, buf_size, CFENCODING);
+    if (FALSE == result) {
+        PyErr_SetString(PyExc_ValueError,
+                        "Error converting CFString to C string");
+        return NULL;
+    }
+    ret = PyUnicode_DecodeUTF8(dest, strlen(dest), NULL);
+    PyMem_Free(dest);
+    return ret;
 }
 
 /*
@@ -109,52 +109,52 @@ CFStringRefToPyUnicode(CFStringRef source) // IN: CFString to convert
 PyObject *
 CGValueToPyTuple(AXValueRef value) //IN: AXValueRef to convert
 {
-   PyObject *tuple = PyTuple_New(2);
-
-   if (kAXValueCGSizeType == AXValueGetType(value)) {
-      CGSize size;
-      double float1 = 0.0;
-      double float2 = 0.0;
-      if (AXValueGetValue(value,kAXValueCGSizeType,&size) == 0){
-       return NULL;
-      }
-      float1 = (double)size.width;
-      float2 = (double)size.height;
-      PyTuple_SetItem(tuple,0,Py_BuildValue("d",float1));
-      PyTuple_SetItem(tuple,1,Py_BuildValue("d",float2));
-      return tuple;
-   }
-
-   if (kAXValueCGPointType == AXValueGetType(value)){
-      CGPoint point;
-      double float1 = 0.0;
-      double float2 = 0.0;
-      if (AXValueGetValue(value,kAXValueCGPointType,&point) == 0){
-       return NULL;
-      }
-      float1 = (double)point.x;
-      float2 = (double)point.y;
-      PyTuple_SetItem(tuple,0,Py_BuildValue("d",float1));
-      PyTuple_SetItem(tuple,1,Py_BuildValue("d",float2));
-      return tuple;
-   }
-
-   if (kAXValueCFRangeType == AXValueGetType(value)){
-      CFRange range;
-      long index1 = 0;
-      long index2 = 0;
-      if (AXValueGetValue(value,kAXValueCFRangeType,&range) == 0){
-       return NULL;
-      }
-      index1 = range.location;
-      index2 = range.length;
-      PyTuple_SetItem(tuple,0,Py_BuildValue("l",index1));
-      PyTuple_SetItem(tuple,1,Py_BuildValue("l",index2));
-      return tuple;
-   }
-
-   // @@@TODO: Need to set a python exception here if not already set
-   return NULL;
+    PyObject *tuple = PyTuple_New(2);
+    
+    if (kAXValueCGSizeType == AXValueGetType(value)) {
+        CGSize size;
+        double float1 = 0.0;
+        double float2 = 0.0;
+        if (AXValueGetValue(value,kAXValueCGSizeType,&size) == 0){
+            return NULL;
+        }
+        float1 = (double)size.width;
+        float2 = (double)size.height;
+        PyTuple_SetItem(tuple,0,Py_BuildValue("d",float1));
+        PyTuple_SetItem(tuple,1,Py_BuildValue("d",float2));
+        return tuple;
+    }
+    
+    if (kAXValueCGPointType == AXValueGetType(value)){
+        CGPoint point;
+        double float1 = 0.0;
+        double float2 = 0.0;
+        if (AXValueGetValue(value,kAXValueCGPointType,&point) == 0){
+            return NULL;
+        }
+        float1 = (double)point.x;
+        float2 = (double)point.y;
+        PyTuple_SetItem(tuple,0,Py_BuildValue("d",float1));
+        PyTuple_SetItem(tuple,1,Py_BuildValue("d",float2));
+        return tuple;
+    }
+    
+    if (kAXValueCFRangeType == AXValueGetType(value)){
+        CFRange range;
+        long index1 = 0;
+        long index2 = 0;
+        if (AXValueGetValue(value,kAXValueCFRangeType,&range) == 0){
+            return NULL;
+        }
+        index1 = range.location;
+        index2 = range.length;
+        PyTuple_SetItem(tuple,0,Py_BuildValue("l",index1));
+        PyTuple_SetItem(tuple,1,Py_BuildValue("l",index2));
+        return tuple;
+    }
+    
+    // @@@TODO: Need to set a python exception here if not already set
+    return NULL;
 }
 
 /*
@@ -178,32 +178,32 @@ CGValueToPyTuple(AXValueRef value) //IN: AXValueRef to convert
 CFStringRef
 PyUnicodeToCFStringRef(PyObject * source) // IN: Python string object
 {
-   char *dest;
-   PyObject *decoded;
-   CFStringRef ret;
-
-   if (PyUnicode_Check(source)) {
-      decoded = PyUnicode_AsUTF8String(source);
-      if (NULL == decoded) {
-         return NULL;
-      }
-      dest = (char *) PyString_AsString(decoded); // dest is read-only here
-      if (NULL == dest) {
-         return NULL;
-      }
-   } else {
-      dest = (char *) PyString_AsString(source);
-      if (NULL == dest) {
-         return NULL;
-      }
-   }
-
-   ret = CFStringCreateWithCString(NULL, dest, CFENCODING);
-   if (NULL == ret)
-   {
-      PyErr_SetString(PyExc_ValueError,
-                      "Error creating CFString from C string");
-      return NULL;
-   }
-   return ret;
+    char *dest;
+    PyObject *decoded;
+    CFStringRef ret;
+    
+    if (PyUnicode_Check(source)) {
+        decoded = PyUnicode_AsUTF8String(source);
+        if (NULL == decoded) {
+            return NULL;
+        }
+//        dest = (char *) PyUnicode_AsUTF8(decoded); // dest is read-only here
+//        if (NULL == dest) {
+//            return NULL;
+//        }
+    } else {
+        dest = (char *) PyUnicode_AsUTF8(source);
+        if (NULL == dest) {
+            return NULL;
+        }
+    }
+    
+    ret = CFStringCreateWithCString(NULL, dest, CFENCODING);
+    if (NULL == ret)
+    {
+        PyErr_SetString(PyExc_ValueError,
+                        "Error creating CFString from C string");
+        return NULL;
+    }
+    return ret;
 }

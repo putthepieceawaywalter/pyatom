@@ -18,7 +18,7 @@
 # St, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from AppKit import NSWorkspace, NSUserDefaults, NSDictionary
-from UserDict import UserDict
+from collections import UserDict
 from os import path
 
 __all__ = ["Prefs"]
@@ -52,9 +52,9 @@ class Prefs(UserDict):
         NSUserDefaults.resetStandardUserDefaults()
         prefs = NSUserDefaults.standardUserDefaults()
         self.defaults = self.__defaults(defaultsPlistName)
-        domainData = prefs.persistentDomainForName_(self.__bundleID)
-        if domainData:
-            self.data = domainData
+        domain_data = prefs.persistentDomainForName_(self.__bundleID)
+        if domain_data:
+            self.data = domain_data
         else:
             self.data = NSDictionary.dictionary()
 
@@ -62,13 +62,13 @@ class Prefs(UserDict):
         if self.__bundlePath is None:
             self.__bundlePath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier_(self.__bundleID)
         if self.__bundlePath:
-            plistPath = path.join(self.__bundlePath, "Contents/Resources/%s.plist" % plistName)
-            plist = NSDictionary.dictionaryWithContentsOfFile_(plistPath)
+            plist_path = path.join(self.__bundlePath, "Contents/Resources/%s.plist" % plistName)
+            plist = NSDictionary.dictionaryWithContentsOfFile_(plist_path)
             if plist:
                 return plist
         return NSDictionary.dictionary()
 
-    def get(self, key):
+    def get(self, key, default=None):
         return self.__getitem__(key)
 
     def __getitem__(self, key):
@@ -82,8 +82,8 @@ class Prefs(UserDict):
         self.__setitem__(key, value)
 
     def __setitem__(self, key, value):
-        mutableData = self.data.mutableCopy()
-        mutableData[key] = value
-        self.data = mutableData
+        mutable_data = self.data.mutableCopy()
+        mutable_data[key] = value
+        self.data = mutable_data
         prefs = NSUserDefaults.standardUserDefaults()
         prefs.setPersistentDomain_forName_(self.data, self.__bundleID)
