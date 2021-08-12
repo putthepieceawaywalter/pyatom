@@ -1,3 +1,5 @@
+This is only here so I can host atomac with python3 support for another project, none of this is mine
+
 =================================
 ATOMac - Automated Testing on Mac
 =================================
